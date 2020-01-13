@@ -1835,6 +1835,59 @@ TEST_URLS = (
     }),
 
     ##################################
+    # NotifyPlivo
+    ##################################
+    ('plivo://', {
+        # No hostname/apikey specified
+        'instance': None,
+    }),
+    ('plivo://{}@{}/15551232000'.format('a' * 10, 'a' * 25), {
+        # invalid auth id
+        'instance': TypeError,
+    }),
+    ('plivo://{}@{}/15551232000'.format('a' * 25, 'a' * 10), {
+        # invalid token
+        'instance': TypeError,
+    }),
+    ('plivo://{}@{}/123'.format('a' * 25, 'a' * 25), {
+        # invalid phone number
+        'instance': TypeError,
+    }),
+    ('plivo://{}@{}/abc'.format('a' * 25, 'a' * 25), {
+        # invalid phone number
+        'instance': TypeError,
+    }),
+    ('plivo://{}@{}/15551232000'.format('a' * 25, 'a' * 25), {
+        # target phone number becomes who we text too; all is good
+        'instance': plugins.NotifyPlivo,
+    }),
+    ('plivo://{}@{}/15551232000/abcd'.format('a' * 25, 'a' * 25), {
+        # invalid target phone number; we fall back to texting ourselves
+        'instance': plugins.NotifyPlivo,
+    }),
+    ('plivo://{}@{}/15551232000/123'.format('a' * 25, 'a' * 25), {
+        # invalid target phone number; we fall back to texting ourselves
+        'instance': plugins.NotifyPlivo,
+    }),
+    ('plivo://{}@{}/?from=15551233000&to=15551232000'.format(
+        'a' * 25, 'a' * 25), {
+            # reference to to= and frome=
+            'instance': plugins.NotifyPlivo,
+    }),
+    ('plivo://{}@{}/15551232000'.format('a' * 25, 'a' * 25), {
+        'instance': plugins.NotifyPlivo,
+        # throw a bizzare code forcing us to fail to look it up
+        'response': False,
+        'requests_response_code': 999,
+    }),
+    ('plivo://{}@{}/15551232000'.format('a' * 25, 'a' * 25), {
+        'instance': plugins.NotifyPlivo,
+        # Throws a series of connection and transfer exceptions when this flag
+        # is set and tests that we gracfully handle them
+        'test_requests_exceptions': True,
+    }),
+
+    ##################################
     # NotifyProwl
     ##################################
     ('prowl://', {
