@@ -49,8 +49,8 @@ it easy to access:
 
 Boxcar, ClickSend, Discord, E-Mail, Emby, Faast, Flock, Gitter, Gotify, Growl,
 IFTTT, Join, Kavenegar, KODI, Kumulos, Mailgun, MatterMost, Matrix, Microsoft
-Windows Notifications, Microsoft Teams, MessageBird, MSG91, Nexmo, Nextcloud,
-Notica, Notifico, Notify MacOSX, MyAndroid, Prowl, Pushalot, PushBullet,
+Windows Notifications, Microsoft Teams, MacOSX, MessageBird, MSG91, MyAndroid,
+Nexmo, Nextcloud, Notica, Notifico, OpenPush, Prowl, Pushalot, PushBullet,
 Pushjet, Pushover, PushSafer, Rocket.Chat, SendGrid, SimplePush, Sinch, Slack,
 Super Toasty, Stride, Syslog, Techulus Push, Telegram, Twilio, Twitter, Twist,
 XBMC, XMPP, Webex Teams}

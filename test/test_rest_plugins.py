@@ -1895,6 +1895,95 @@ TEST_URLS = (
     }),
 
     ##################################
+    # NotifyOpenPush
+    ##################################
+    ('opush://', {
+        'instance': TypeError,
+    }),
+    ('opush://:@/', {
+        'instance': TypeError,
+    }),
+    # Host specified, but no token
+    ('opush://localhost', {
+        'instance': TypeError,
+    }),
+    # Normal URLs
+    ('opush://localhost/%s' % ('b' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opush://localhost/%s?priority=high' % ('b' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opush://localhost/%s?priority=invalid' % ('b' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opush://user@localhost/%s' % ('c' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opush://user:pass@localhost/%s/' % ('d' * 20), {
+        'instance': plugins.NotifyOpenPush,
+
+        # Our expected url(privacy=True) startswith() response:
+        'privacy_url': 'opush://user:****@localhost/d...d',
+    }),
+    ('opush://user:pass@localhost/a/path/%s/' % ('r' * 20), {
+        'instance': plugins.NotifyOpenPush,
+
+        # Our expected url(privacy=True) startswith() response:
+        'privacy_url': 'opush://user:****@localhost/a/path/r...r',
+    }),
+    ('opush://localhost:8080/%s' % ('a' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opush://user:pass@localhost:8080/%s' % ('b' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opushs://localhost/%s' % ('j' * 20), {
+        'instance': plugins.NotifyOpenPush,
+        'privacy_url': 'opushs://localhost/j...j',
+    }),
+    ('opushs://user:pass@localhost/%s' % ('e' * 20), {
+        'instance': plugins.NotifyOpenPush,
+
+        # Our expected url(privacy=True) startswith() response:
+        'privacy_url': 'opushs://user:****@localhost/e...e',
+    }),
+    ('opushs://localhost:8080/path/%s' % ('5' * 20), {
+        'instance': plugins.NotifyOpenPush,
+        'privacy_url': 'opushs://localhost:8080/path/5...5',
+    }),
+    ('opushs://user:pass@localhost:8080/%s' % ('6' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opush://localhost/%s' % ('b' * 20), {
+        'instance': plugins.NotifyOpenPush,
+        # don't include an image by default
+        'include_image': False,
+    }),
+    # Test Header overrides
+    ('opush://localhost:8080//%s/?+HeaderKey=HeaderValue' % ('7' * 20), {
+        'instance': plugins.NotifyOpenPush,
+    }),
+    ('opush://localhost/%s' % ('c' * 20), {
+        'instance': plugins.NotifyOpenPush,
+        # force a failure
+        'response': False,
+        'requests_response_code': requests.codes.internal_server_error,
+    }),
+    ('opush://localhost/%s' % ('d' * 7), {
+        'instance': plugins.NotifyOpenPush,
+        # throw a bizzare code forcing us to fail to look it up
+        'response': False,
+        'requests_response_code': 999,
+    }),
+    ('opush://localhost/%s' % ('e' * 8), {
+        'instance': plugins.NotifyOpenPush,
+        # Throws a series of connection and transfer exceptions when this flag
+        # is set and tests that we gracfully handle them
+        'test_requests_exceptions': True,
+    }),
+
+    ##################################
     # NotifyProwl
     ##################################
     ('prowl://', {
@@ -4781,6 +4870,18 @@ def test_notify_msteams_plugin():
     # Whitespace also acts as an invalid token value
     with pytest.raises(TypeError):
         plugins.NotifyMSTeams(token_a='abcd', token_b='abcd', token_c='  ')
+
+
+def test_notify_openpush_plugin():
+    """
+    API: NotifyOpenPush() Extra Checks
+
+    """
+    kwargs = plugins.NotifyOpenPush.parse_url('opush://localhost/abcd')
+    assert isinstance(kwargs, dict) is True
+    kwargs['fullpath'] = None
+    assert isinstance(
+        plugins.NotifyOpenPush(**kwargs), plugins.NotifyOpenPush)
 
 
 def test_notify_prowl_plugin():
